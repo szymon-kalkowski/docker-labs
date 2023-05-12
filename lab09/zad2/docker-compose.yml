@@ -1,0 +1,31 @@
+version: '3.9'
+services:
+  database:
+    image: mongo:4.1.13
+    platform: linux/amd64
+    networks:
+      - backend_network
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - 27017:27017
+  
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile 
+    platform: linux/arm64
+    networks:
+      - backend_network
+    ports:
+      - 3000:3000
+    depends_on:
+      - database
+    restart: always
+
+volumes:
+  mongo_data:
+
+networks:
+  backend_network:
+    driver: bridge
