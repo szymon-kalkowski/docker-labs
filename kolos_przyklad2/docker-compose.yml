@@ -1,0 +1,40 @@
+version: '3.8'
+services:
+  redis:
+    image: 'redis:latest'
+    networks:
+      - backend_network
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+  
+  mongodb:
+    image: mongo:latest
+    networks:
+      - backend_network
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - 27017:27017
+
+  express:
+    build: 
+      context: ./app
+      dockerfile: Dockerfile
+    networks:
+      - backend_network
+    ports:
+      - '3000:3000'
+    depends_on:
+      - redis
+      - mongodb
+    restart: always
+
+volumes:
+  mongo_data:
+  redis_data:
+
+networks:
+  backend_network:
+    driver: bridge
